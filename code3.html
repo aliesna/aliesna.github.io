@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>code</title>
+    </head>
+    <style>
+        #div1{
+            margin-top: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        #div2{
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            gap: 5px;
+        }
+        #div3{
+            margin-top: 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0px;
+            flex-direction: column;
+            
+            
+        }
+      
+        #addBtn{
+            width: 70px;
+            height: 35px;
+            background-color: rgb(48, 109, 241);
+        }
+
+        body{
+            background-color:rgb(160, 160, 160);
+            overflow: hidden;
+        }
+        #ansT{
+            
+            color: rgb(200, 255, 0); 
+
+        }
+        #sen{
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            gap: 5px;
+        }
+        
+
+    </style>
+
+    <body id="body">
+
+        <div id="div1">Enter the code:</div>
+        <div id="div2">
+            <input id="inpt1">
+        </div>
+        <div id="div2">
+            <button id="addBtn">Enter</button>
+        </div>
+        <div id="div3">
+            <h1 id="ansT"></h1>
+            <div id="sen"></div>
+        </div>
+
+
+
+    <script>
+
+        let inpt1 = 
+        document.getElementById("inpt1");
+        let addBtn = 
+        document.getElementById("addBtn");
+        let ansT = 
+        document.getElementById("ansT");
+        let sen =
+        document.getElementById("sen");
+        
+        addBtn.onclick = function(){
+            let ans = 
+            String(inpt1.value)
+            if (ans === "1234"){
+                ansT.textContent = "The code is correct";
+                ansT.style.color = "green";
+                sen.textContent = "الو الو الو"
+            }
+            else{
+                ansT.textContent = "The code is wrong";
+                ansT.style.color = "red";
+                sen.textContent = "";
+            }
+
+        }
+
+</script>
+
+
+</body>
+
+</html>
