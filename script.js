@@ -5,44 +5,40 @@ const timerEl = document.getElementById("timer");
 const startBtn = document.getElementById("startBtn");
 const status = document.getElementById("status");
 
-const TIMER_DURATION = 60 * 60; // 60 دقیقه
+const TIMER_DURATION = 60 * 60; // 60 دقیقه (ثانیه)
 
-let interval;
-
-// مرجع دیتابیس
 const timerRef = ref(db, "sharedTimer");
 
-// شروع تایمر
+let interval = null;
+
+// 🚀 شروع تایمر
 startBtn.onclick = () => {
-    const startTime = Date.now();
+    const endTime = Date.now() + TIMER_DURATION * 1000;
 
     set(timerRef, {
-        startTime: startTime,
-        duration: TIMER_DURATION
+        endTime: endTime
     });
 
     status.innerText = "تایمر شروع شد!";
 };
 
-// گوش دادن به تغییرات (همه دستگاه‌ها)
+// 👂 گوش دادن همه دستگاه‌ها
 onValue(timerRef, (snapshot) => {
     const data = snapshot.val();
+    if (!data || !data.endTime) return;
 
-    if (!data) return;
+    const endTime = data.endTime;
 
-    const startTime = data.startTime;
-    const duration = data.duration;
+    // جلوگیری از چند interval همزمان
+    if (interval) clearInterval(interval);
 
-    clearInterval(interval);
-
-    interval = setInterval(() => {
-        const now = Date.now();
-        const elapsed = Math.floor((now - startTime) / 1000);
-        const remaining = duration - elapsed;
+    function updateTimer() {
+        const remaining = Math.floor((endTime - Date.now()) / 1000);
 
         if (remaining <= 0) {
             timerEl.innerText = "00:00";
             clearInterval(interval);
+            interval = null;
             return;
         }
 
@@ -52,6 +48,11 @@ onValue(timerRef, (snapshot) => {
         timerEl.innerText =
             String(minutes).padStart(2, "0") + ":" +
             String(seconds).padStart(2, "0");
+    }
 
-    }, 1000);
+    // اجرا فوری (بدون انتظار 1 ثانیه)
+    updateTimer();
+
+    // آپدیت هر 1 ثانیه
+    interval = setInterval(updateTimer, 1000);
 });
