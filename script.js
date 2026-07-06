@@ -5,40 +5,26 @@ const timerEl = document.getElementById("timer");
 const startBtn = document.getElementById("startBtn");
 const status = document.getElementById("status");
 
-const TIMER_DURATION = 60 * 60; // 60 دقیقه (ثانیه)
+const TIMER_DURATION = 60 * 60 * 1000; // 60 دقیقه (میلی‌ثانیه)
 
 const timerRef = ref(db, "sharedTimer");
 
 let interval = null;
 
-// 🚀 شروع تایمر
-startBtn.onclick = () => {
-    const endTime = Date.now() + TIMER_DURATION * 1000;
+function startTimer(endTime) {
 
-    set(timerRef, {
-        endTime: endTime
-    });
-
-    status.innerText = "تایمر شروع شد!";
-};
-
-// 👂 گوش دادن همه دستگاه‌ها
-onValue(timerRef, (snapshot) => {
-    const data = snapshot.val();
-    if (!data || !data.endTime) return;
-
-    const endTime = data.endTime;
-
-    // جلوگیری از چند interval همزمان
     if (interval) clearInterval(interval);
 
-    function updateTimer() {
+    function update() {
         const remaining = Math.floor((endTime - Date.now()) / 1000);
 
         if (remaining <= 0) {
             timerEl.innerText = "00:00";
             clearInterval(interval);
             interval = null;
+
+            // پاک کردن local
+            localStorage.removeItem("endTime");
             return;
         }
 
@@ -50,9 +36,42 @@ onValue(timerRef, (snapshot) => {
             String(seconds).padStart(2, "0");
     }
 
-    // اجرا فوری (بدون انتظار 1 ثانیه)
-    updateTimer();
+    update();
+    interval = setInterval(update, 1000);
+}
 
-    // آپدیت هر 1 ثانیه
-    interval = setInterval(updateTimer, 1000);
+// 🚀 شروع تایمر (ارسال به Firebase + ذخیره local)
+startBtn.onclick = () => {
+    const endTime = Date.now() + TIMER_DURATION;
+
+    // Firebase (برای چند دستگاه)
+    set(timerRef, {
+        endTime: endTime
+    });
+
+    // LocalStorage (برای backup و رفرش)
+    localStorage.setItem("endTime", endTime);
+
+    status.innerText = "تایمر شروع شد!";
+};
+
+// 👂 گرفتن از Firebase (منبع اصلی)
+onValue(timerRef, (snapshot) => {
+    const data = snapshot.val();
+
+    if (!data || !data.endTime) return;
+
+    const endTime = data.endTime;
+
+    // sync با localStorage
+    localStorage.setItem("endTime", endTime);
+
+    startTimer(endTime);
 });
+
+// 🔄 اگر اینترنت نبود یا سریع لود شد
+const saved = localStorage.getItem("endTime");
+
+if (saved) {
+    startTimer(Number(saved));
+}
