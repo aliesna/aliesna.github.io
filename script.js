@@ -1,87 +1,79 @@
-import { ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { db } from "./firebase.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-const timerEl = document.getElementById("timer");
+/* Firebase config */
+const firebaseConfig = {
+  apiKey: "AIzaSyDb1qC3qTxi16_caH0GPz4wMsnw94ZRPy0",
+  authDomain: "timer-cec7c.firebaseapp.com",
+  databaseURL: "https://timer-cec7c-default-rtdb.firebaseio.com",
+  projectId: "timer-cec7c",
+  storageBucket: "timer-cec7c.firebasestorage.app",
+  messagingSenderId: "500563602401",
+  appId: "1:500563602401:web:359556facfb864141880a0",
+  measurementId: "G-1V0V5V1NBZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* عناصر صفحه */
+const timeEl = document.getElementById("time");
 const startBtn = document.getElementById("startBtn");
-const status = document.getElementById("status");
 
-const TIMER_DURATION = 60 * 60 * 1000;
-
-const timerRef = ref(db, "sharedTimer");
-
+/* تنظیمات تایمر */
+const DURATION = 60 * 60; // 60 دقیقه
 let interval = null;
+let endTime = localStorage.getItem("endTime");
 
-// ⏱ تایمر
-function startTimer(endTime) {
+/* نمایش زمان */
+function updateDisplay(seconds) {
+    let m = Math.floor(seconds / 60);
+    let s = seconds % 60;
+    timeEl.textContent = `${m}:${s.toString().padStart(2, "0")}`;
+}
 
-    if (interval) clearInterval(interval);
+/* شروع تایمر */
+function startTimer(savedEndTime = null) {
+    if (interval) return; // جلوگیری از چند بار اجرا
 
-    function update() {
+    const now = Date.now();
+    endTime = savedEndTime || (now + DURATION * 1000);
+
+    localStorage.setItem("endTime", endTime);
+    localStorage.setItem("running", "true");
+
+    startBtn.disabled = true;
+
+    interval = setInterval(() => {
         const remaining = Math.floor((endTime - Date.now()) / 1000);
 
         if (remaining <= 0) {
-            timerEl.innerText = "00:00";
-            startBtn.disabled = false;
-            startBtn.innerText = "Start";
+            clearInterval(interval);
+            interval = null;
 
             localStorage.removeItem("endTime");
+            localStorage.removeItem("running");
+
+            updateDisplay(0);
+            startBtn.disabled = false;
             return;
         }
 
-        const minutes = Math.floor(remaining / 60);
-        const seconds = remaining % 60;
+        updateDisplay(remaining);
+    }, 1000);
 
-        timerEl.innerText =
-            String(minutes).padStart(2, "0") + ":" +
-            String(seconds).padStart(2, "0");
-    }
-
-    update();
-    interval = setInterval(update, 1000);
-}
-
-// 🚀 شروع تایمر (فقط یک بار)
-startBtn.onclick = () => {
-
-    // اگر قبلاً شروع شده → اجازه نده
-    if (startBtn.disabled) return;
-
-    const endTime = Date.now() + TIMER_DURATION;
-
-    set(timerRef, {
+    /* ذخیره در Firebase */
+    set(ref(db, "timer"), {
         endTime: endTime
     });
-
-    localStorage.setItem("endTime", endTime);
-
-    startBtn.disabled = true;
-    startBtn.innerText = "Running...";
-
-    status.innerText = "تایمر شروع شد! ";
-};
-
-// 👂 گرفتن از Firebase
-onValue(timerRef, (snapshot) => {
-    const data = snapshot.val();
-
-    if (!data || !data.endTime) return;
-
-    const endTime = data.endTime;
-
-    localStorage.setItem("endTime", endTime);
-
-    startBtn.disabled = true;
-    startBtn.innerText = "Running...";
-
-    startTimer(endTime);
-});
-
-// 🔄 اگر رفرش شد
-const saved = localStorage.getItem("endTime");
-
-if (saved) {
-    startBtn.disabled = true;
-    startBtn.innerText = "Running...";
-
-    startTimer(Number(saved));
 }
+
+/* ادامه تایمر بعد از رفرش */
+if (localStorage.getItem("running") === "true" && endTime) {
+    startTimer(parseInt(endTime));
+}
+
+/* دکمه استارت */
+startBtn.addEventListener("click", () => {
+    startTimer();
+});
