@@ -57,7 +57,7 @@ startBtn.onclick = () => {
     startBtn.disabled = true;
     startBtn.innerText = "Running...";
 
-    status.innerText = "تایمر شروع شد!";
+    status.innerText = "تایمر شروع شد! ";
 };
 
 // 👂 گرفتن از Firebase
