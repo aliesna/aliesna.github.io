@@ -16,33 +16,50 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* عناصر صفحه */
 const timeEl = document.getElementById("time");
 const startBtn = document.getElementById("startBtn");
 
-/* تنظیمات تایمر */
-const DURATION = 60 * 60; // 60 دقیقه
-let interval = null;
-let endTime = localStorage.getItem("endTime");
+const DURATION = 60 * 60;
 
-/* نمایش زمان */
+let interval = null;
+
+/* 🔥 این مهمه: وضعیت واقعی تایمر */
+let endTime = parseInt(localStorage.getItem("endTime"));
+let isRunning = localStorage.getItem("running") === "true";
+
+/* نمایش */
 function updateDisplay(seconds) {
     let m = Math.floor(seconds / 60);
     let s = seconds % 60;
     timeEl.textContent = `${m}:${s.toString().padStart(2, "0")}`;
 }
 
+/* 🚫 قفل کامل Start */
+function lockStart() {
+    startBtn.disabled = true;
+    startBtn.style.opacity = "0.5";
+}
+
+/* 🔓 آزاد کردن Start */
+function unlockStart() {
+    startBtn.disabled = false;
+    startBtn.style.opacity = "1";
+}
+
 /* شروع تایمر */
-function startTimer(savedEndTime = null) {
-    if (interval) return; // جلوگیری از چند بار اجرا
+function startTimer() {
+    // 🚫 اگر قبلاً اجرا شده، اجازه نده
+    if (isRunning) return;
 
     const now = Date.now();
-    endTime = savedEndTime || (now + DURATION * 1000);
+    endTime = now + DURATION * 1000;
 
     localStorage.setItem("endTime", endTime);
     localStorage.setItem("running", "true");
 
-    startBtn.disabled = true;
+    isRunning = true;
+
+    lockStart();
 
     interval = setInterval(() => {
         const remaining = Math.floor((endTime - Date.now()) / 1000);
@@ -54,26 +71,47 @@ function startTimer(savedEndTime = null) {
             localStorage.removeItem("endTime");
             localStorage.removeItem("running");
 
+            isRunning = false;
+
             updateDisplay(0);
-            startBtn.disabled = false;
+            unlockStart();
             return;
         }
 
         updateDisplay(remaining);
     }, 1000);
 
-    /* ذخیره در Firebase */
+    /* Firebase sync */
     set(ref(db, "timer"), {
-        endTime: endTime
+        endTime: endTime,
+        running: true
     });
 }
 
-/* ادامه تایمر بعد از رفرش */
-if (localStorage.getItem("running") === "true" && endTime) {
-    startTimer(parseInt(endTime));
+/* ادامه بعد از رفرش */
+if (isRunning && endTime) {
+    lockStart();
+
+    interval = setInterval(() => {
+        const remaining = Math.floor((endTime - Date.now()) / 1000);
+
+        if (remaining <= 0) {
+            clearInterval(interval);
+            interval = null;
+
+            localStorage.removeItem("endTime");
+            localStorage.removeItem("running");
+
+            isRunning = false;
+
+            updateDisplay(0);
+            unlockStart();
+            return;
+        }
+
+        updateDisplay(remaining);
+    }, 1000);
 }
 
-/* دکمه استارت */
-startBtn.addEventListener("click", () => {
-    startTimer();
-});
+/* دکمه */
+startBtn.addEventListener("click", startTimer);
