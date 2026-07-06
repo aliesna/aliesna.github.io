@@ -5,12 +5,13 @@ const timerEl = document.getElementById("timer");
 const startBtn = document.getElementById("startBtn");
 const status = document.getElementById("status");
 
-const TIMER_DURATION = 60 * 60 * 1000; // 60 دقیقه (میلی‌ثانیه)
+const TIMER_DURATION = 60 * 60 * 1000;
 
 const timerRef = ref(db, "sharedTimer");
 
 let interval = null;
 
+// ⏱ تایمر
 function startTimer(endTime) {
 
     if (interval) clearInterval(interval);
@@ -20,10 +21,9 @@ function startTimer(endTime) {
 
         if (remaining <= 0) {
             timerEl.innerText = "00:00";
-            clearInterval(interval);
-            interval = null;
+            startBtn.disabled = false;
+            startBtn.innerText = "Start";
 
-            // پاک کردن local
             localStorage.removeItem("endTime");
             return;
         }
@@ -40,22 +40,27 @@ function startTimer(endTime) {
     interval = setInterval(update, 1000);
 }
 
-// 🚀 شروع تایمر (ارسال به Firebase + ذخیره local)
+// 🚀 شروع تایمر (فقط یک بار)
 startBtn.onclick = () => {
+
+    // اگر قبلاً شروع شده → اجازه نده
+    if (startBtn.disabled) return;
+
     const endTime = Date.now() + TIMER_DURATION;
 
-    // Firebase (برای چند دستگاه)
     set(timerRef, {
         endTime: endTime
     });
 
-    // LocalStorage (برای backup و رفرش)
     localStorage.setItem("endTime", endTime);
+
+    startBtn.disabled = true;
+    startBtn.innerText = "Running...";
 
     status.innerText = "تایمر شروع شد!";
 };
 
-// 👂 گرفتن از Firebase (منبع اصلی)
+// 👂 گرفتن از Firebase
 onValue(timerRef, (snapshot) => {
     const data = snapshot.val();
 
@@ -63,15 +68,20 @@ onValue(timerRef, (snapshot) => {
 
     const endTime = data.endTime;
 
-    // sync با localStorage
     localStorage.setItem("endTime", endTime);
+
+    startBtn.disabled = true;
+    startBtn.innerText = "Running...";
 
     startTimer(endTime);
 });
 
-// 🔄 اگر اینترنت نبود یا سریع لود شد
+// 🔄 اگر رفرش شد
 const saved = localStorage.getItem("endTime");
 
 if (saved) {
+    startBtn.disabled = true;
+    startBtn.innerText = "Running...";
+
     startTimer(Number(saved));
 }
