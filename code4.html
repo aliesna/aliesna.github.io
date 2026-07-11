@@ -97,6 +97,8 @@
             if (ans === "virus"){
                 ansT.textContent = "The code is correct";
                 ansT.style.color = "green";
+                successSound.currentTime = 0; // اگر دوباره کلیک شد از اول پخش شود
+                successSound.play();
                 sen.textContent = "به مرحله ی بعد بروید"
             }
             else{
