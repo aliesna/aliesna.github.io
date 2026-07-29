@@ -1,119 +1,33 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>code</title>
-    </head>
-    <style>
-        #div1{
-            margin-top: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-        }
-        #div2{
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-            gap: 5px;
-        }
-        #div3{
-            margin-top: 0px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0px;
-            flex-direction: column;
-            
-            
-        }
-      
-        #addBtn{
-            width: 70px;
-            height: 35px;
-            background-color: rgb(48, 109, 241);
-        }
-
-        body{
-            background-color:rgb(160, 160, 160);
-            overflow: hidden;
-        }
-        #ansT{
-            
-            color: rgb(200, 255, 0); 
-
-        }
-        #sen{
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-            gap: 5px;
-        }
-        
-
-    </style>
-
-    <body id="body">
-        <audio id="successSound" src="code4after.ogg"></audio>
-        <div id="div1">
-            <audio controls>
-                <source src="code4before.m4a" type="audio/mpeg">
-                مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
-            </audio>
-        </div>
-
-        <div id="div2">Enter the code:</div>
-        <div id="div2">
-            <input id="inpt1">
-        </div>
-        <div id="div2">
-            <button id="addBtn">Enter</button>
-        </div>
-        <div id="div3">
-            <h1 id="ansT"></h1>
-            <div id="sen"></div>
-        </div>
-        
-
-
-    <script>
-        let successSound = document.getElementById("successSound");
-
-        let inpt1 = 
-        document.getElementById("inpt1");
-        let addBtn = 
-        document.getElementById("addBtn");
-        let ansT = 
-        document.getElementById("ansT");
-        let sen =
-        document.getElementById("sen");
-        
-        addBtn.onclick = function(){
-            let ans = 
-            String(inpt1.value)
-            if (ans === "virus"){
-                ansT.textContent = "The code is correct";
-                ansT.style.color = "green";
-                successSound.currentTime = 0; // اگر دوباره کلیک شد از اول پخش شود
-                successSound.play();
-                sen.textContent = "به مرحله ی بعد بروید"
-            }
-            else{
-                ansT.textContent = "The code is wrong";
-                ansT.style.color = "red";
-                sen.textContent = "";
-            }
-
-        }
-
-</script>
-
-
+<style>
+    body{
+        background-color:rgb(160, 160, 160);
+        overflow: hidden;
+    }
+    #div1{
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+    #div2{
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+</style>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>senario</title>
+</head>
+<body>
+    <div id="div1">
+    </div>
+    <div id="div2">
+        با کمک حس لامسه خود این معما را حل کنید
+موفق باشید
+    </div>
 </body>
-
-</html>
