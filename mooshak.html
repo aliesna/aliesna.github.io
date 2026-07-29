@@ -1,112 +1,33 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>code</title>
-    </head>
-    <style>
-        #div1{
-            margin-top: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-        }
-        #div2{
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-            gap: 5px;
-        }
-        #div3{
-            margin-top: 0px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0px;
-            flex-direction: column;
-            
-            
-        }
-      
-        #addBtn{
-            width: 70px;
-            height: 35px;
-            background-color: rgb(48, 109, 241);
-        }
-
-        body{
-            background-color:rgb(160, 160, 160);
-            overflow: hidden;
-        }
-        #ansT{
-            
-            color: rgb(200, 255, 0); 
-
-        }
-        #sen{
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-            gap: 5px;
-        }
-        
-
-    </style>
-
-    <body id="body">
-        <audio id="successSound" src="6.m4a"></audio>
-
-        <div id="div1">Enter the code:</div>
-        <div id="div2">
-            <input id="inpt1">
-        </div>
-        <div id="div2">
-            <button id="addBtn">Enter</button>
-        </div>
-        <div id="div3">
-            <h1 id="ansT"></h1>
-            <div id="sen"></div>
-        </div>
-
-
-
-    <script>
-        let successSound = document.getElementById("successSound");
-
-        let inpt1 = 
-        document.getElementById("inpt1");
-        let addBtn = 
-        document.getElementById("addBtn");
-        let ansT = 
-        document.getElementById("ansT");
-        let sen =
-        document.getElementById("sen");
-        
-        addBtn.onclick = function(){
-            let ans = 
-            String(inpt1.value)
-            if (ans === "virus ebola"){
-                ansT.textContent = "The code is correct";
-                ansT.style.color = "green";
-                successSound.currentTime = 0; // اگر دوباره کلیک شد از اول پخش شود
-                successSound.play();
-                sen.textContent = "توجه کنید شما حق ورود مجدد به این اتاق را ندارید رمز لپتاب را با دقت حساب کنید و اگه رمز اشتباه را وارد کنید نمیتوانید از لپتاب استفاده کنید و بازی را به اتمام برسانید برای اینکه از رمزی که بدست اوردید مطمئن شوید قبل از خروج از این مرحله می توانید حرف اول قسمت اول رمز و حرف اول قسمت دوم رمز را به عنوان رمز این بارکد وارد کرده این برای این است تا قبل از اینکه از این مرحله خارج شوید مططمئن شوید رمز نهایی را به درستی پیدا کرده اید اگر هم بخواهید میتوانید از این بارکد استفاده نکنید و مستقیم به مرحله بعد بروید راستی لپتاب داخل دفتر هست";
-            }
-            else{
-                ansT.textContent = "The code is wrong";
-                ansT.style.color = "red";
-                sen.textContent = "a";
-            }
-
-        }
-
-</script>
-
+<style>
+    body{
+        background-color:rgb(160, 160, 160);
+        overflow: hidden;
+    }
+    #div1{
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+    #div2{
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+</style>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>senario</title>
+</head>
+<body>
+    <div id="div1">
+    </div>
+    <div id="div2">
+        اگر مطمئن هستید رمز را بدست آوردید به دفتر دکتر احسانی بروید
+توجه کنید که شما حق ورود مجدد به این مرحله را ندارید و اگر رمز لپتاب را به درستی وارد نکنید نمیتوانید بازی را به اتمام برسانید
+    </div>
 </body>
-
-</html>
